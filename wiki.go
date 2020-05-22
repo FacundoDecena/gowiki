@@ -5,6 +5,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"os"
 	"regexp"
 )
 
@@ -17,7 +18,7 @@ type Page struct {
 
 var templates = template.Must(template.ParseFiles("./templates/edit.html", "./templates/view.html"))
 
-var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
+var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9]+)$")
 
 // Persistence section
 
@@ -73,6 +74,10 @@ func saveHandler(writer http.ResponseWriter, request *http.Request, title string
 
 }
 
+func homeHandler(res http.ResponseWriter, req *http.Request) {
+	http.Redirect(res, req, "/view/FrontPage", http.StatusFound)
+}
+
 func makeHandler(function func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
 		match := validPath.FindStringSubmatch(request.URL.Path)
@@ -101,9 +106,17 @@ func renderTemplate(writer http.ResponseWriter, filename string, page *Page) {
 
 func main() {
 
+	http.HandleFunc("/", homeHandler)
 	http.HandleFunc("/view/", makeHandler(viewHandler))
 	http.HandleFunc("/edit/", makeHandler(editHandler))
 	http.HandleFunc("/save/", makeHandler(saveHandler))
 
-	log.Fatal(http.ListenAndServe(":8080", nil))
+	var port string
+	if len(os.Args) > 1 {
+		port = os.Args[1]
+	} else {
+		port = "8080"
+	}
+
+	log.Fatal(http.ListenAndServe(":" + port, nil))
 }
