@@ -7,13 +7,15 @@ import (
 	"net/http"
 	"os"
 	"regexp"
+	"strings"
 )
 
 // Structs section
 
 type Page struct {
 	Title string
-	Body  []byte
+	Body  string//[]byte
+	SBody []string
 }
 
 var templates = template.Must(template.ParseFiles("./templates/edit.html", "./templates/view.html"))
@@ -24,7 +26,7 @@ var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9]+)$")
 
 func (p *Page) save() error {
 	filename := "./data/" + p.Title + ".txt"
-	return ioutil.WriteFile(filename, p.Body, 0600)
+	return ioutil.WriteFile(filename, []byte(p.Body), 0600)
 }
 
 func loadPage(title string) (*Page, error) {
@@ -33,13 +35,15 @@ func loadPage(title string) (*Page, error) {
 	if err != nil {
 		return nil, err
 	}
-	return &Page{Title: title, Body: body}, nil
+	return &Page{Title: title, Body: string(body)}, nil
 }
 
 // Handlers section
 
 func viewHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := loadPage(title)
+
+	page.SBody = strings.Split(page.Body, "\n")
 
 	if err != nil {
 		http.Redirect(writer, request, "/edit/"+title, http.StatusFound) // 302
@@ -51,6 +55,7 @@ func viewHandler(writer http.ResponseWriter, request *http.Request, title string
 
 func editHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := loadPage(title)
+
 	if err != nil {
 		page = &Page{Title: title}
 	}
@@ -61,7 +66,7 @@ func editHandler(writer http.ResponseWriter, request *http.Request, title string
 func saveHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	body := request.FormValue("body")
 
-	page := &Page{Title: title, Body: []byte(body)}
+	page := &Page{Title: title, Body: body}
 
 	err := page.save()
 
@@ -119,4 +124,5 @@ func main() {
 	}
 
 	log.Fatal(http.ListenAndServe(":" + port, nil))
+
 }

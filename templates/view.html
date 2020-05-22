@@ -1,5 +1,65 @@
-<h1>{{.Title}}</h1>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{.Title}} gowiki</title>
+    <style>
+        *{
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        html, body {
+            height: 100%;
+            margin: 0
+        }
+        p > a {
+            background-color: #b5b6b7;
+            border-radius: 3px;
+            padding: 3px 4px;
+            margin-right: 15px;
+            text-decoration: none;
+        }
+        p {
+            text-align: right;
+        }
+        p > a:hover{
+            background-color: #ddd;
+            text-decoration: underline;
+        }
+        h1 {
+            font-family: 'Courier New', Courier, monospace;
+            text-align: center;
+            font-size: 3em;
+        }
+        .container {
+            display: flex;
+            flex-flow: column;
+            height: 100%;
+        }
+        .container .header{
+            flex: 0 1 auto;
+            background-color: #f9f9f9;
+        }
+        .container .body {
+            flex: 1 1 auto;
+            background-color: #f0f0f0;
+            padding: 15px 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
 
-<p>[<a href="/edit/{{.Title}}">edit</a>]</p>
+        <div class="header">
+            <h1>{{.Title}}</h1>
+    
+            <p><a href="/edit/{{.Title}}">Edit content</a></p>
+        </div>
 
-<div>{{printf "%s" .Body}}</div>
+        <div class="body" >
+            {{range .SBody}}{{.}}<br>{{end}}
+        </div>
+
+    </div>
+</body>
+</html>
