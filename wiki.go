@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"html/template"
 	"io/ioutil"
 	"log"
@@ -38,12 +37,7 @@ func loadPage(title string) (*Page, error) {
 
 // Handlers section
 
-func viewHandler(writer http.ResponseWriter, request *http.Request) {
-	title, err := getTitle(writer, request)
-	if err != nil {
-		return
-	}
-
+func viewHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := loadPage(title)
 
 	if err != nil {
@@ -54,12 +48,7 @@ func viewHandler(writer http.ResponseWriter, request *http.Request) {
 	renderTemplate(writer, "view", page)
 }
 
-func editHandler(writer http.ResponseWriter, request *http.Request) {
-	title, err := getTitle(writer, request)
-	if err != nil {
-		return
-	}
-
+func editHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := loadPage(title)
 	if err != nil {
 		page = &Page{Title: title}
@@ -68,17 +57,12 @@ func editHandler(writer http.ResponseWriter, request *http.Request) {
 	renderTemplate(writer, "edit", page)
 }
 
-func saveHandler(writer http.ResponseWriter, request *http.Request) {
-	title, err := getTitle(writer, request)
-	if err != nil {
-		return
-	}
-
+func saveHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	body := request.FormValue("body")
 
 	page := &Page{Title: title, Body: []byte(body)}
 
-	err = page.save()
+	err := page.save()
 
 	if err != nil {
 		http.Error(writer, err.Error(), http.StatusInternalServerError)
@@ -89,13 +73,16 @@ func saveHandler(writer http.ResponseWriter, request *http.Request) {
 
 }
 
-func getTitle(writer http.ResponseWriter, request *http.Request) (string, error) {
-	title := validPath.FindStringSubmatch(request.URL.Path)
-	if title == nil {
-		http.NotFound(writer, request)
-		return "", errors.New("invalid Page Title")
+func makeHandler(function func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
+	return func(writer http.ResponseWriter, request *http.Request) {
+		match := validPath.FindStringSubmatch(request.URL.Path)
+		if match == nil {
+			http.NotFound(writer, request)
+			return
+		}
+
+		function(writer, request, match[2])
 	}
-	return title[2], nil // Actually title is in the second subexpression of the var title :D
 }
 
 // Render section
@@ -114,9 +101,9 @@ func renderTemplate(writer http.ResponseWriter, filename string, page *Page) {
 
 func main() {
 
-	http.HandleFunc("/view/", viewHandler)
-	http.HandleFunc("/edit/", editHandler)
-	http.HandleFunc("/save/", saveHandler)
+	http.HandleFunc("/view/", makeHandler(viewHandler))
+	http.HandleFunc("/edit/", makeHandler(editHandler))
+	http.HandleFunc("/save/", makeHandler(saveHandler))
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
