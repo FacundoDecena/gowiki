@@ -1,10 +1,12 @@
 package main
 
 import (
+	"errors"
 	"html/template"
 	"io/ioutil"
 	"log"
 	"net/http"
+	"regexp"
 )
 
 // Structs section
@@ -13,6 +15,10 @@ type Page struct {
 	Title string
 	Body  []byte
 }
+
+var templates = template.Must(template.ParseFiles("edit.html", "view.html"))
+
+var validPath = regexp.MustCompile("^/(edit|save|view)/([a-zA-Z0-9]+)$")
 
 // Persistence section
 
@@ -33,14 +39,27 @@ func loadPage(title string) (*Page, error) {
 // Handlers section
 
 func viewHandler(writer http.ResponseWriter, request *http.Request) {
-	title := request.URL.Path[len("/view/"):]
-	page, _ := loadPage(title)
+	title, err := getTitle(writer, request)
+	if err != nil {
+		return
+	}
+
+	page, err := loadPage(title)
+
+	if err != nil {
+		http.Redirect(writer, request, "/edit/"+title, http.StatusFound) // 302
+		return
+	}
 
 	renderTemplate(writer, "view", page)
 }
 
 func editHandler(writer http.ResponseWriter, request *http.Request) {
-	title := request.URL.Path[len("/edit/"):]
+	title, err := getTitle(writer, request)
+	if err != nil {
+		return
+	}
+
 	page, err := loadPage(title)
 	if err != nil {
 		page = &Page{Title: title}
@@ -49,12 +68,46 @@ func editHandler(writer http.ResponseWriter, request *http.Request) {
 	renderTemplate(writer, "edit", page)
 }
 
+func saveHandler(writer http.ResponseWriter, request *http.Request) {
+	title, err := getTitle(writer, request)
+	if err != nil {
+		return
+	}
+
+	body := request.FormValue("body")
+
+	page := &Page{Title: title, Body: []byte(body)}
+
+	err = page.save()
+
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+		return
+	}
+
+	http.Redirect(writer, request, "/view/"+title, http.StatusFound)
+
+}
+
+func getTitle(writer http.ResponseWriter, request *http.Request) (string, error) {
+	title := validPath.FindStringSubmatch(request.URL.Path)
+	if title == nil {
+		http.NotFound(writer, request)
+		return "", errors.New("invalid Page Title")
+	}
+	return title[2], nil // Actually title is in the second subexpression of the var title :D
+}
+
 // Render section
 
 func renderTemplate(writer http.ResponseWriter, filename string, page *Page) {
-	templ, _ := template.ParseFiles(filename + ".html")
 
-	templ.Execute(writer, page)
+	err := templates.ExecuteTemplate(writer, filename+".html", page)
+
+	if err != nil {
+		http.Error(writer, err.Error(), http.StatusInternalServerError)
+	}
+
 }
 
 // Main section
@@ -63,7 +116,7 @@ func main() {
 
 	http.HandleFunc("/view/", viewHandler)
 	http.HandleFunc("/edit/", editHandler)
-	// http.HandleFunc("/save/", saveHandler)
+	http.HandleFunc("/save/", saveHandler)
 
 	log.Fatal(http.ListenAndServe(":8080", nil))
 }
