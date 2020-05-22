@@ -43,12 +43,12 @@ func loadPage(title string) (*Page, error) {
 func viewHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := loadPage(title)
 
-	page.SBody = strings.Split(page.Body, "\n")
-
 	if err != nil {
 		http.Redirect(writer, request, "/edit/"+title, http.StatusFound) // 302
 		return
 	}
+
+	page.SBody = strings.Split(page.Body, "\n")
 
 	renderTemplate(writer, "view", page)
 }
