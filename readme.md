@@ -2,7 +2,7 @@
 
 ## Introduccion
 
-Este repositorio fue creado para seguir el tutorial del paquete [net/http](https://golang.org/pkg/net/http/) en el que se crea una wiki siguiendo un paso a paso
+Este repositorio fue creado para seguir el tutorial del paquete [net/http](https://golang.org/pkg/net/http/) (parte de la *Go standard library*.) en el que se crea una wiki siguiendo un paso a paso
 
 ## Objetivos
 
