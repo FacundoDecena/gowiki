@@ -1,7 +1,12 @@
-Welcome to the wiki!
+Bienvenido a GoWiki!
 
-¡Bienvenido a la wiki!
+Esta wiki fue creada siguiendo el tutorial del Go Standar Library net/html que podrás encontrar aqui: https://golang.org/doc/articles/wiki/ (El poder agregar hipervinculos en la wiki es un ToDo...).
 
-Navigation between created wikis coming soon, currently you can only access them by the URL, next days is going to be implemented unless college stuff gets hard.
+De momento en la wiki podes:
+1. Buscar en el formulario de arriba
+2. Ver y editar las wikis
+3. Romperla, creo que en realidad esta en un punto bastante estable de su vida y no será fácil pero verdaderamente no lo probé
 
-Pronto habrá navegacion entre las wikis creadas, de momento solo se puede acceder a las wikis desde la url, debería hacerse en estos días salvo que se me compliquen las cosas con la universidad.
+Si buscas algo que no existe vas a poder crearlo, el redireccinamiento es automatico.
+
+Si por alguna de esas cosas locas de la vida esto llega a estar accesible al público, cosa que dudo, podes encontrar el código fuente aqui: https://github.com/FacundoDecena/gowiki. Dudo bastante que llegue a eso pero por las dudas... ah, y si llega a estar para el publico este párrafo se va porque el repositorio sería privado :).
