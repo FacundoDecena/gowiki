@@ -12,8 +12,10 @@ import (
 // ViewHandler shows a page
 func ViewHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := models.LoadPage(title)
+	log.Println("Showing page " + page.Title)
 
 	if err != nil {
+		log.Println("Not found page " + page.Title)
 		http.Redirect(writer, request, "/edit/"+title, http.StatusFound) // 302
 		return
 	}
@@ -27,8 +29,11 @@ func ViewHandler(writer http.ResponseWriter, request *http.Request, title string
 func EditHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := models.LoadPage(title)
 
+	log.Println("Editing page " + page.Title)
+
 	if err != nil {
 		page = &models.Page{Title: title}
+		log.Println(page.Title + " Not found, creating it")
 	}
 
 	renderTemplate(writer, "edit", page)
@@ -38,6 +43,7 @@ func EditHandler(writer http.ResponseWriter, request *http.Request, title string
 func SaveHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	body := request.FormValue("body")
 
+	log.Println("saving page " + title)
 	page := &models.Page{Title: title, Body: body}
 
 	err := page.Save()
