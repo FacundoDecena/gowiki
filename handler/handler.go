@@ -12,13 +12,13 @@ import (
 // ViewHandler shows a page
 func ViewHandler(writer http.ResponseWriter, request *http.Request, title string) {
 	page, err := models.LoadPage(title)
-	log.Println("Showing page " + title)
-
+	
 	if err != nil {
 		log.Println("Not found page " + title)
 		http.Redirect(writer, request, "/edit/"+title, http.StatusFound) // 302
 		return
 	}
+	log.Println("Showing page " + title)
 
 	page.SBody = strings.Split(page.Body, "\n")
 
@@ -34,7 +34,7 @@ func EditHandler(writer http.ResponseWriter, request *http.Request, title string
 		log.Println(page.Title + " Not found, creating it")
 	}
 	log.Println("Editing page " + page.Title)
-	
+
 	renderTemplate(writer, "edit", page)
 }
 
