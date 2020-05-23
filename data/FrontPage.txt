@@ -2,4 +2,6 @@ Welcome to the wiki!
 
 ¡Bienvenido a la wiki!
 
-Hola franco
+Navigation between created wikis coming soon, currently you can only access them by the URL, next days is going to be implemented unless college stuff gets hard.
+
+Pronto habrá navegacion entre las wikis creadas, de momento solo se puede acceder a las wikis desde la url, debería hacerse en estos días salvo que se me compliquen las cosas con la universidad.

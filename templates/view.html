@@ -12,7 +12,7 @@
             height: 100%;
             margin: 0
         }
-        p > a {
+        p > .edit {
             transition-duration: 0.4s;
             text-align: center;
             text-decoration: none;
@@ -25,10 +25,29 @@
             cursor: pointer;
             margin-right: 15px;
         }
-        p {
+        a.home {
+            transition-duration: 0.4s;
+            text-align: center;
+            text-decoration: none;
+            display: inline-block;
+            font-size: 16px;
+            padding: 4px 8px;
+            background-color: white; 
+            color: black; 
+            border: 2px solid #696969;
+            cursor: pointer;
+            margin-left: 15px;
+            margin-top: 10px;
+        }
+        .rigth {
             text-align: right;
         }
-        p > a:hover{
+        p > .edit:hover{
+            background-color: #696969;
+            color: white;
+            box-shadow: 0 3px 4px 0 rgba(0,0,0,0.24), 0 4px 10px 0 rgba(0,0,0,0.19);
+        }
+        a.home:hover{
             background-color: #696969;
             color: white;
             box-shadow: 0 3px 4px 0 rgba(0,0,0,0.24), 0 4px 10px 0 rgba(0,0,0,0.19);
@@ -52,15 +71,27 @@
             background-color: #f0f0f0;
             padding: 15px 10px;
         }
+        input[type=text] {
+            width: 100%;
+            box-sizing: border-box;
+            border: 2px solid #ccc;
+            border-radius: 4px;
+            font-size: 16px;
+            background-color: white;
+            padding: 3px 5px 3px 10px;
+        }
     </style>
 </head>
 <body>
     <div class="container">
 
         <div class="header">
-            <h1>{{.Title}}</h1>
-    
-            <p><a href="/edit/{{.Title}}">Edit content</a></p>
+            <p>
+                <form method="POST" action="/view/"><input type="text" name="search" placeholder="Search.."/></form>
+                <a class="home" href="/">Home</a>
+                <h1>{{.Title}}</h1>
+            </p>
+            <p class="rigth"><a class="edit" href="/edit/{{.Title}}">Edit content</a></p>
         </div>
 
         <div class="body" >

@@ -14,11 +14,11 @@ import (
 
 type Page struct {
 	Title string
-	Body  string//[]byte
+	Body  string //[]byte
 	SBody []string
 }
 
-var templates = template.Must(template.ParseFiles("./templates/edit.html", "./templates/view.html"))
+var templates = template.Must(template.ParseFiles("templates/edit.html", "templates/view.html"))
 
 var validPath = regexp.MustCompile("^/(edit|view|save)/([a-zA-Z0-9]+)$")
 
@@ -85,13 +85,26 @@ func homeHandler(res http.ResponseWriter, req *http.Request) {
 
 func makeHandler(function func(http.ResponseWriter, *http.Request, string)) http.HandlerFunc {
 	return func(writer http.ResponseWriter, request *http.Request) {
-		match := validPath.FindStringSubmatch(request.URL.Path)
-		if match == nil {
-			http.NotFound(writer, request)
-			return
+
+		err := request.ParseForm()
+		if err != nil {
+			log.Fatal("Efeo el ParseFrom")
 		}
 
-		function(writer, request, match[2])
+		search := request.Form.Get("search")
+
+		if search != "" {
+			function(writer, request, search)
+
+		} else {
+			match := validPath.FindStringSubmatch(request.URL.Path)
+			if match == nil {
+				http.NotFound(writer, request)
+				return
+			}
+
+			function(writer, request, match[2])
+		}
 	}
 }
 
@@ -123,6 +136,6 @@ func main() {
 		port = "8080"
 	}
 
-	log.Fatal(http.ListenAndServe(":" + port, nil))
+	log.Fatal(http.ListenAndServe(":"+port, nil))
 
 }
