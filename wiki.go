@@ -19,7 +19,7 @@ func main() {
 	if len(os.Args) > 1 {
 		port = os.Args[1]
 	} else {
-		port = "8080"
+		port = "80"
 	}
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
