@@ -19,7 +19,7 @@ func main() {
 	if len(os.Args) > 1 {
 		port = os.Args[1]
 	} else {
-		port = "80"
+		port = os.Getenv("PORT")
 	}
 
 	log.Fatal(http.ListenAndServe(":"+port, nil))
