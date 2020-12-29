@@ -2,6 +2,7 @@
 package handler
 
 import (
+	"io/ioutil"
 	"log"
 	"net/http"
 	"strings"
@@ -59,6 +60,19 @@ func SaveHandler(writer http.ResponseWriter, request *http.Request, title string
 // HomeHandler redirects to /view/FrontPage when someone try to connect to /
 func HomeHandler(res http.ResponseWriter, req *http.Request) {
 	http.Redirect(res, req, "/view/FrontPage", http.StatusFound)
+}
+
+// ViewHandler shows a page
+func DataHandler(writer http.ResponseWriter, request *http.Request, title string) {
+	files, err := ioutil.ReadDir("./data")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, file := range files {
+		log.Println(file.Name())
+	}
+
 }
 
 // Gets the title and call the function function with it
